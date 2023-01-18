@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import User from '../models/user.js';
 import Token from '../models/token.js';
 import Role from '../models/role.js';
-import sendMail, { get_html_reset_password, get_html_verify } from '../utils/sendMail.js'
+import sendMail, { get_html_reset_password, get_html_verify } from '../utils/sendMail.js';
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ const getUsers = async () => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const signUp = async (userData) => {
     const { email, name, password, roleId, birthday } = userData;
@@ -40,7 +40,7 @@ const signUp = async (userData) => {
 
             verifiedToken = buffer.toString('hex');
         });
-        
+
         const user = new User({
             email,
             name,
@@ -60,31 +60,31 @@ const signUp = async (userData) => {
             from: process.env.EMAIL,
             to: user.email,
             subject: 'Verification Email',
-            html: get_html_verify(`${process.env.LOCAL_HOST}/api/verification/${verifiedToken}`)
+            html: get_html_verify(`http://localhost:5173/verification/${verifiedToken}`),
         });
     } catch (err) {
         throw err;
     }
-}
+};
 
 const verify = async (verifiedToken) => {
     try {
         const token = await Token.getByValue(verifiedToken);
-        
+
         const userId = token.userId;
         const user = await User.getById(userId);
         user.isVerified = true;
         await user.save();
 
         await Token.deleteMany({ userId: userId });
-    } catch (err) { 
+    } catch (err) {
         throw err;
     }
-}
+};
 
 const login = async (email, password) => {
     try {
-        const user = await User.getByEmail(email, { path: 'role'});
+        const user = await User.getByEmail(email, { path: 'role' });
 
         const isValidPassword = bcrypt.compareSync(password, user.password);
         if (!isValidPassword) {
@@ -110,7 +110,7 @@ const login = async (email, password) => {
         const token = jwt.sign(
             {
                 email: user.email,
-                userId: user._id.toString()
+                userId: user._id.toString(),
             },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
@@ -120,7 +120,7 @@ const login = async (email, password) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const forgotPassword = async (email) => {
     let tokenString;
@@ -145,14 +145,14 @@ const forgotPassword = async (email) => {
             from: process.env.EMAIL,
             to: email,
             subject: 'Reset Password',
-            html: get_html_reset_password(`http://localhost:8080/api/reset-password/${token.value}`)
+            html: get_html_reset_password(`http://localhost:8080/api/reset-password/${token.value}`),
         });
 
         return token.value;
     } catch (err) {
         throw err;
     }
-}
+};
 
 const resetPassword = async (resetToken, newPassword) => {
     try {
@@ -167,13 +167,6 @@ const resetPassword = async (resetToken, newPassword) => {
     } catch (err) {
         throw err;
     }
-}
-
-export { 
-    signUp,
-    login,
-    verify,
-    forgotPassword,
-    resetPassword,
-    getUsers,
 };
+
+export { signUp, login, verify, forgotPassword, resetPassword, getUsers };
