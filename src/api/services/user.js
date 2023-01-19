@@ -60,7 +60,7 @@ const signUp = async (userData) => {
             from: process.env.EMAIL,
             to: user.email,
             subject: 'Verification Email',
-            html: get_html_verify(`http://localhost:5173/verification/${verifiedToken}`),
+            html: get_html_verify(`http://localhost:5173/api/verification/${verifiedToken}`),
         });
     } catch (err) {
         throw err;
