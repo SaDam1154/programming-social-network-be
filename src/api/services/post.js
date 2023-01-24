@@ -11,12 +11,12 @@ const getPosts = async (filter) => {
             .populate('tag', 'name')
             .populate('creator', 'name')
             .sort({ createdAt: -1 });
-        
+
         return posts;
     } catch (err) {
         throw err;
     }
-}
+};
 
 const getPost = async (id) => {
     try {
@@ -24,7 +24,7 @@ const getPost = async (id) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const createPost = async ({ title, content, tagId, categoryId, files, userId }) => {
     try {
@@ -37,20 +37,20 @@ const createPost = async ({ title, content, tagId, categoryId, files, userId }) 
             content,
             tag: tag._id,
             category: category._id,
-            creator: userId
+            creator: userId,
         });
 
         // upload images
         const uploadedImages = await imageHandler.uploadMultiple(userId, post._id, files);
         post.images = uploadedImages;
-    
+
         await post.save();
 
         return post;
     } catch (err) {
         throw err;
     }
-}
+};
 
 const updatePost = async ({ postId, title, content, tagId, categoryId, files, userId }) => {
     try {
@@ -88,19 +88,18 @@ const updatePost = async ({ postId, title, content, tagId, categoryId, files, us
         if (title) {
             editedPost.title = title;
         }
-            
+
         if (content) {
             editedPost.content = content;
         }
-        
-        
+
         await editedPost.save();
 
         return editedPost;
     } catch (err) {
         throw err;
     }
-}
+};
 
 const deleteSavedPost = async (postId, userId) => {
     try {
@@ -108,7 +107,7 @@ const deleteSavedPost = async (postId, userId) => {
         const post = await Post.getById(postId);
         const updatedSavedPosts = user.savedPosts;
         if (updatedSavedPosts.includes(post._id)) {
-            user.savedPosts = updatedSavedPosts.filter(p => p._id.toString() !== post._id.toString());
+            user.savedPosts = updatedSavedPosts.filter((p) => p._id.toString() !== post._id.toString());
             await user.save();
         }
 
@@ -116,7 +115,7 @@ const deleteSavedPost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const deletePost = async (postId, userId) => {
     try {
@@ -144,7 +143,7 @@ const deletePost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const likePost = async (postId, userId) => {
     try {
@@ -163,7 +162,7 @@ const likePost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const unlikePost = async (postId, userId) => {
     try {
@@ -171,8 +170,9 @@ const unlikePost = async (postId, userId) => {
 
         const updatedLikes = post.likes;
         if (updatedLikes.includes(userId)) {
-            updatedLikes = updatedLikes.filter(like => like.toString() !== userId.toString());
-            post.likes = updatedLikes;
+            post.likes = updatedLikes.filter((like) => like.toString() !== userId.toString());
+            // updatedLikes = updatedLikes.filter(like => like.toString() !== userId.toString());
+            // post.likes = updatedLikes;
             await post.save();
         }
 
@@ -182,7 +182,7 @@ const unlikePost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const viewPost = async (postId, userId) => {
     try {
@@ -200,7 +200,7 @@ const viewPost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 const savePost = async (postId, userId) => {
     try {
@@ -216,7 +216,7 @@ const savePost = async (postId, userId) => {
     } catch (err) {
         throw err;
     }
-}
+};
 
 export {
     getPosts,
@@ -228,5 +228,5 @@ export {
     unlikePost,
     viewPost,
     savePost,
-    deleteSavedPost
+    deleteSavedPost,
 };
